@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Presupuestos - Pastel Style</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex text-slate-700">
+
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between fixed h-full z-10 print:hidden">
+        <div>
+            <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-300 to-pink-300 flex items-center justify-center text-white font-bold text-lg">
+                    P
+                </div>
+                <span class="font-bold text-lg bg-gradient-to-r from-sky-600 to-pink-500 bg-clip-text text-transparent">PastelInvoice</span>
+            </div>
+
+            <nav class="p-4 space-y-2">
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-sky-50 text-sky-700 font-medium transition-all duration-200 border border-sky-100/50">
+                    <span class="text-lg">📄</span>
+                    <span>Nuevo Presupuesto</span>
+                </a>
+
+                <button onclick="abrirModalClientes()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium transition-all duration-200 group text-left">
+                    <span class="text-lg text-slate-400 group-hover:text-sky-400">👤</span>
+                    <span>Gestión de Clientes</span>
+                </button>
+
+                <button onclick="abrirModalInventario()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium transition-all duration-200 group text-left">
+                    <span class="text-lg text-slate-400 group-hover:text-pink-400">📦</span>
+                    <span>Inventario</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-100">
+            <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 cursor-pointer">
+                <div class="w-9 h-9 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-bold text-sm">
+                    AD
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-slate-800">Admin Dashboard</p>
+                    <p class="text-[10px] text-slate-400">Configuración</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 pl-64 min-h-screen w-full print:pl-0">
+        
+        <div class="max-w-5xl mx-auto py-8 px-6 sm:px-8 print:py-0 print:px-4">
+            
+            <div class="flex justify-end mb-4 print:hidden">
+                <button onclick="abrirModalConfig()" class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 border border-slate-200 rounded-xl shadow-sm text-xs transition-all transform active:scale-95">
+                    <span>⚙️</span>
+                    <span>Configuración de Documento</span>
+                </button>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6 print:border-none print:shadow-none print:p-0">
+                
+                <div id="print-header-section" class="hidden print:block border-b-2 border-slate-200 pb-6">
+                    <div class="flex justify-between items-start gap-4">
+                        <div class="space-y-1">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 mb-2">
+                                Datos del Emisor
+                            </h2>
+                            <div class="grid grid-cols-1 gap-1 text-xs text-slate-600">
+                                <div><span class="font-bold text-slate-500">Empresa:</span> <span id="print-empresa-nombre" class="font-bold text-slate-800">Mi Empresa S.A.S.</span></div>
+                                <div><span class="font-bold text-slate-500">NIT:</span> <span id="print-empresa-nit">900.123.456-7</span></div>
+                                <div><span class="font-bold text-slate-500">Ciudad:</span> <span id="print-empresa-ciudad">Bogotá, Colombia</span></div>
+                                <div><span class="font-bold text-slate-500">Teléfono:</span> <span id="print-empresa-telefono">+57 300 123 4567</span></div>
+                                <div><span class="font-bold text-slate-500">Email:</span> <span id="print-empresa-email">contacto@miempresa.com</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col items-end justify-start">
+                            <div id="print-logo-container" class="w-32 h-20 flex items-center justify-end overflow-hidden">
+                                <img id="print-logo-preview" class="max-w-full max-h-full object-contain hidden" src="" alt="Logo Empresa">
+                                <div id="print-logo-placeholder" class="text-[10px] text-slate-300 uppercase tracking-widest border border-dashed border-slate-200 p-2 rounded">Sin Logo</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/70 rounded-2xl p-5 border border-slate-100 print:bg-transparent print:border-none print:p-0">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
+                        <div class="flex items-center gap-3">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 print:text-slate-800 print:text-sm">Información del Cliente</h3>
+                            <button type="button" onclick="abrirModalClientes()" class="print:hidden text-[10px] bg-sky-100 text-sky-700 px-2 py-1 rounded-lg font-bold hover:bg-sky-200 transition-all">
+                                + Registrar Nuevo
+                            </button>
+                        </div>
+                        
+                        <div class="relative flex items-center print:hidden">
+                            <span class="absolute pl-3 text-slate-400 text-sm">🔍</span>
+                            <input type="text" id="buscar-cliente" placeholder="Buscar cliente por NIT o Nombre..." class="pl-9 pr-20 py-2 w-72 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-300 text-xs shadow-sm bg-white" onkeyup="buscarClienteMock()">
+                            <span id="search-indicator" class="absolute right-3 text-[10px] bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded font-bold hidden">¡Listo!</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 print:grid-cols-3 print:gap-2">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 print:text-slate-600">NIT / CC</label>
+                            <input type="text" id="cliente-nit" placeholder="Ej: 10203040" class="mt-1 block w-full rounded-xl border-slate-200 bg-white sm:text-sm p-2.5 border focus:border-sky-400 focus:ring-sky-400 print:border-none print:p-0 print:text-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 print:text-slate-600">Nombre Completo</label>
+                            <input type="text" id="cliente-nombre" placeholder="Ej: Juan Pérez" class="mt-1 block w-full rounded-xl border-slate-200 bg-white sm:text-sm p-2.5 border focus:border-sky-400 focus:ring-sky-400 print:border-none print:p-0 print:font-bold print:text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 print:text-slate-600">Ciudad</label>
+                            <input type="text" id="cliente-ciudad" placeholder="Ej: Medellín" class="mt-1 block w-full rounded-xl border-slate-200 bg-white sm:text-sm p-2.5 border focus:border-sky-400 focus:ring-sky-400 print:border-none print:p-0 print:text-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 print:text-slate-600">Teléfono</label>
+                            <input type="text" id="cliente-telefono" placeholder="Ej: 3115551234" class="mt-1 block w-full rounded-xl border-slate-200 bg-white sm:text-sm p-2.5 border focus:border-sky-400 focus:ring-sky-400 print:border-none print:p-0 print:text-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 print:text-slate-600">Email</label>
+                            <input type="email" id="cliente-email" placeholder="Ej: juan@mail.com" class="mt-1 block w-full rounded-xl border-slate-200 bg-white sm:text-sm p-2.5 border focus:border-sky-400 focus:ring-sky-400 print:border-none print:p-0 print:text-slate-700">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="print:hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Agregar Artículos al Presupuesto</h3>
+                        <div class="relative flex items-center">
+                            <span class="absolute pl-3 text-slate-400 text-xs">🔍</span>
+                            <input type="text" id="buscar-articulo" placeholder="Escanear barra o buscar artículo..." class="pl-8 pr-3 py-1.5 w-64 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-xs shadow-sm" onkeyup="buscarArticuloInventario()">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 bg-gradient-to-r from-sky-50/50 to-pink-50/30 p-4 rounded-2xl border border-sky-100/40">
+                        <div class="md:col-span-5">
+                            <label class="block text-[11px] font-bold text-sky-800">Descripción / Artículo</label>
+                            <input type="text" id="nuevo-articulo" placeholder="Ej: Computador Portátil Pastel" class="mt-1 block w-full rounded-xl border-slate-200 bg-white sm:text-sm p-2.5 border focus:border-sky-400 focus:ring-sky-400">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-bold text-sky-800">Cantidad</label>
+                            <input type="number" id="nuevo-cant" value="1" min="1" class="mt-1 block w-full rounded-xl border-slate-200 bg-white sm:text-sm p-2.5 border focus:border-sky-400 focus:ring-sky-400">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-[11px] font-bold text-sky-800">Precio Unitario ($)</label>
+                            <input type="number" id="nuevo-precio" placeholder="Ej: 450000" class="mt-1 block w-full rounded-xl border-slate-200 bg-white sm:text-sm p-2.5 border focus:border-sky-400 focus:ring-sky-400" onkeydown="if(event.key === 'Enter') { event.preventDefault(); agregarArticulo(); }">
+                        </div>
+                        <div class="md:col-span-2 flex items-end">
+                            <button type="button" onclick="agregarArticulo()" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm shadow-pink-200 text-sm transition-all transform active:scale-95">
+                                + Añadir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-2xl border border-slate-200 print:border-none print:overflow-visible">
+                    <table class="min-w-full divide-y divide-slate-200" id="tabla-presupuesto">
+                        <thead class="bg-slate-800 text-white print:bg-slate-100 print:text-slate-800">
+                            <tr>
+                                <th class="px-6 py-3.5 text-left text-xs font-bold uppercase tracking-wider w-1/12 print:px-2">Cant</th>
+                                <th class="px-6 py-3.5 text-left text-xs font-bold uppercase tracking-wider w-5/12 print:px-2">Artículo / Descripción</th>
+                                <th class="px-6 py-3.5 text-right text-xs font-bold uppercase tracking-wider w-2/12 print:px-2">Valor Unitario</th>
+                                <th class="px-6 py-3.5 text-right text-xs font-bold uppercase tracking-wider w-2/12 print:px-2">IVA (19%)</th>
+                                <th class="px-6 py-3.5 text-right text-xs font-bold uppercase tracking-wider w-2/12 print:px-2">Total</th>
+                                <th class="px-6 py-3.5 text-center text-xs font-bold uppercase tracking-wider w-1/12 print:hidden">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-slate-100" id="cuerpo-tabla">
+                            <tr id="fila-vacia">
+                                <td colspan="6" class="px-6 py-10 text-center text-sm text-slate-400 italic">
+                                    No has agregado ningún artículo aún.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-4 border-t border-slate-100 print:grid-cols-1 print:gap-4 print:pt-2">
+                    
+                    <div class="md:col-span-7 space-y-4 print:space-y-3">
+                        <div class="print:block">
+                            <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1 print:text-slate-600">Garantías y Condiciones</span>
+                            <p id="print-garantias" class="text-sm text-slate-600 bg-slate-50/50 p-3 rounded-xl border border-slate-100 min-h-[50px] print:p-0 print:border-none print:bg-transparent">Ninguna estipulada aún. Ábrelo en configuración.</p>
+                        </div>
+                        <div class="print:block">
+                            <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1 print:text-slate-600">Observaciones</span>
+                            <p id="print-observaciones" class="text-sm text-slate-600 bg-slate-50/50 p-3 rounded-xl border border-slate-100 min-h-[40px] print:p-0 print:border-none print:bg-transparent">Sin observaciones adicionales.</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 print:grid-cols-2 print:gap-2">
+                            <div>
+                                <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide print:text-slate-600">Validez de la Oferta</span>
+                                <span id="print-validez" class="text-sm text-slate-700 font-medium">15 Días Calendario</span>
+                            </div>
+                            <div>
+                                <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide print:text-slate-600">Método de Pago</span>
+                                <span id="print-pago" class="text-sm text-slate-700 font-medium">Transferencia Bancaria</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-5 bg-gradient-to-b from-slate-50 to-white rounded-2xl p-5 border border-slate-200 flex flex-col justify-between print:border-none print:bg-transparent print:p-0 print:mt-4">
+                        <div class="space-y-3 print:space-y-1.5">
+                            <div class="flex justify-between text-sm text-slate-500 print:text-slate-600">
+                                <span>Subtotal</span>
+                                <span id="resumen-subtotal" class="font-medium print:text-slate-800">$ 0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-slate-500 print:text-slate-600">
+                                <span>IVA (19%)</span>
+                                <span id="resumen-iva" class="font-medium print:text-slate-800">$ 0.00</span>
+                            </div>
+                            <hr class="border-slate-200 my-2 print:border-slate-300">
+                            <div class="flex justify-between text-lg font-bold text-slate-800 print:text-xl">
+                                <span>Total General</span>
+                                <span id="resumen-total" class="text-sky-600 print:text-slate-900">$ 0.00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 pt-4 flex gap-3 print:hidden">
+                            <button type="button" onclick="limpiarPresupuesto()" class="flex-1 bg-white hover:bg-slate-50 text-slate-600 font-semibold py-2.5 px-4 border border-slate-200 rounded-xl shadow-sm text-sm transition-all">
+                                Limpiar todo
+                            </button>
+                            <button type="button" onclick="window.print()" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-sky-100 text-sm transition-all transform active:scale-95">
+                                Imprimir / PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="modal-clientes" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden print:hidden">
+        <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full mx-4 shadow-xl overflow-hidden transform scale-95 duration-200">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-sky-50/50 to-pink-50/30">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">👤</span>
+                    <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Nuevo Cliente</h3>
+                </div>
+                <button onclick="cerrarModalClientes()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+            </div>
+            <form onsubmit="guardarCliente(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase">NIT / Cédula</label>
+                    <input type="text" id="modal-nit" required placeholder="Ej: 10203040" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase">Nombre Completo</label>
+                    <input type="text" id="modal-nombre" required placeholder="Ej: Juan Pérez" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase">Ciudad</label>
+                    <input type="text" id="modal-ciudad" required placeholder="Ej: Medellín" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase">Teléfono</label>
+                    <input type="text" id="modal-telefono" required placeholder="Ej: 3115551234" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase">Email</label>
+                    <input type="email" id="modal-email" required placeholder="Ej: juan@mail.com" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                </div>
+                <div class="flex gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarModalClientes()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2 px-4 rounded-xl text-xs">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-sky-500 to-pink-500 text-white font-bold py-2 px-4 rounded-xl text-xs shadow-md">Guardar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-inventario" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden print:hidden">
+        <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full mx-4 shadow-xl overflow-hidden transform scale-95 duration-200">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-pink-50/50 to-sky-50/30">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">📦</span>
+                    <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Nuevo Artículo / Producto</h3>
+                </div>
+                <button onclick="cerrarModalInventario()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+            </div>
+            <form onsubmit="guardarArticuloInventario(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase">Código de Barras</label>
+                    <input type="text" id="modal-inv-codigo" required placeholder="Ej: 770123456789" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-pink-300 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase">Descripción / Artículo</label>
+                    <input type="text" id="modal-inv-descripcion" required placeholder="Ej: Computador Portátil Pastel" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-pink-300 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase">Precio Unitario ($)</label>
+                    <input type="number" id="modal-inv-precio" required min="1" placeholder="Ej: 1500000" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-pink-300 focus:outline-none">
+                </div>
+                <div class="flex gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarModalInventario()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2 px-4 rounded-xl text-xs">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-pink-500 to-sky-500 text-white font-bold py-2 px-4 rounded-xl text-xs shadow-md">Guardar en Inventario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-config" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden print:hidden">
+        <div class="bg-white rounded-2xl border border-slate-200 max-w-2xl w-full mx-4 shadow-2xl overflow-hidden transform scale-95 duration-200">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-sky-100/50 to-pink-100/50">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">⚙️</span>
+                    <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Configuración Global del Presupuesto</h3>
+                </div>
+                <button onclick="cerrarModalConfig()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+            </div>
+            
+            <form onsubmit="aplicarConfiguracion(event)" class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+                <div>
+                    <h4 class="text-xs font-bold text-sky-600 uppercase tracking-wider mb-3 border-b border-slate-100 pb-1">1. Datos del Emisor y Logo</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
+                        <div class="md:col-span-4 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded-2xl p-4 bg-slate-50/50 relative">
+                            <span class="text-xs font-bold text-slate-400 mb-2 block uppercase tracking-wide">Logo de Empresa</span>
+                            
+                            <div id="cfg-logo-preview-container" class="w-full h-24 flex items-center justify-center overflow-hidden bg-white rounded-xl border border-slate-100">
+                                <span id="cfg-logo-placeholder-text" class="text-[10px] text-slate-400 italic">Sin Logo</span>
+                                <img id="cfg-logo-preview-img" class="max-w-full max-h-full object-contain hidden" src="" alt="Preview Logo">
+                            </div>
+                            
+                            <button type="button" id="btn-remove-logo" onclick="removerLogo()" class="absolute top-2 right-2 text-pink-500 hover:text-pink-700 font-bold text-xs hidden">✕</button>
+                        </div>
+
+                        <div class="md:col-span-8 flex flex-col justify-center">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Subir Logotipo</label>
+                            <input type="file" id="cfg-logo-input" accept="image/*" onchange="procesarLogo(this)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 cursor-pointer">
+                            <p class="text-[10px] text-slate-400 mt-2">Formatos sugeridos: PNG o JPG con fondo blanco o transparente.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase">Nombre Empresa</label>
+                            <input type="text" id="cfg-nombre" value="Mi Empresa S.A.S." required class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase">NIT</label>
+                            <input type="text" id="cfg-nit" value="900.123.456-7" required class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase">Ciudad</label>
+                            <input type="text" id="cfg-ciudad" value="Bogotá, Colombia" required class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase">Teléfono</label>
+                            <input type="text" id="cfg-telefono" value="+57 300 123 4567" required class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase">Email Corporativo</label>
+                            <input type="email" id="cfg-email" value="contacto@miempresa.com" required class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-sky-300 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-pink-500 uppercase tracking-wider mb-3 border-b border-slate-100 pb-1">2. Garantías y Condiciones</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase">Garantías y Condiciones generales</label>
+                            <textarea id="cfg-garantias" rows="3" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-pink-300 focus:outline-none" placeholder="Ej: Garantía completa de 12 meses. Soporte prioritario de 90 días..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase">Observaciones / Notas Adicionales</label>
+                            <textarea id="cfg-observaciones" rows="2" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-pink-300 focus:outline-none" placeholder="Ej: Precios válidos respetando las cantidades estipuladas..."></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase">Validez de la Oferta</label>
+                                <input type="text" id="cfg-validez" value="15 Días Calendario" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-pink-300 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase">Método de Pago Preferido</label>
+                                <input type="text" id="cfg-pago" value="Transferencia Bancaria Directa" class="mt-1 block w-full rounded-xl border-slate-200 sm:text-sm p-2.5 border focus:ring-2 focus:ring-pink-300 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarModalConfig()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2.5 px-4 rounded-xl text-xs transition-all">
+                        Cancelar sin Guardar
+                    </button>
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-sky-500 via-purple-400 to-pink-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transform active:scale-95 transition-all">
+                        Aplicar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // Importar las funciones de Firebase desde la CDN oficial
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Configuración de tu App de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPz4MasSPNSGs2BHc4hSOCgUWvihl4EA8",
+            authDomain: "presupuestos-2-6cddb.firebaseapp.com",
+            projectId: "presupuestos-2-6cddb",
+            storageBucket: "presupuestos-2-6cddb.firebasestorage.app",
+            messagingSenderId: "633528906195",
+            appId: "1:633528906195:web:8fb800fe3641985a627f26",
+            measurementId: "G-X9K5QP75Q5"
+        };
+
+        // Inicializar Firebase y Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Bases de datos locales (Sincronizadas dinámicamente con Firestore)
+        let baseClientes = [];
+        let baseInventario = [];
+        let articulos = [];
+        let logoBase64 = "";
+
+        // --- ESCUCHAR CAMBIOS EN TIEMPO REAL DESDE FIRESTORE ---
+
+        // Clientes
+        onSnapshot(collection(db, "clientes"), (snapshot) => {
+            baseClientes = [];
+            snapshot.forEach((doc) => {
+                baseClientes.push(doc.data());
+            });
+            console.log("Clientes sincronizados con Firestore:", baseClientes);
+        });
+
+        // Inventario
+        onSnapshot(collection(db, "inventario"), (snapshot) => {
+            baseInventario = [];
+            snapshot.forEach((doc) => {
+                baseInventario.push(doc.data());
+            });
+            console.log("Inventario sincronizado con Firestore:", baseInventario);
+        });
+
+        // --- INICIALIZAR TEXTOS AL CARGAR LA PÁGINA ---
+        window.onload = function() {
+            sincronizarVistaImpresion();
+        };
+
+        // --- LÓGICA DE PROCESADO DEL LOGO ---
+        function procesarLogo(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoBase64 = e.target.result;
+                    
+                    document.getElementById('cfg-logo-placeholder-text').classList.add('hidden');
+                    const previewImg = document.getElementById('cfg-logo-preview-img');
+                    previewImg.src = logoBase64;
+                    previewImg.classList.remove('hidden');
+                    document.getElementById('btn-remove-logo').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removerLogo() {
+            logoBase64 = "";
+            document.getElementById('cfg-logo-input').value = "";
+            document.getElementById('cfg-logo-preview-img').src = "";
+            document.getElementById('cfg-logo-preview-img').classList.add('hidden');
+            document.getElementById('cfg-logo-placeholder-text').classList.remove('hidden');
+            document.getElementById('btn-remove-logo').classList.add('hidden');
+        }
+
+        // --- MODAL CONFIGURACIÓN GENERAL ---
+        function abrirModalConfig() {
+            document.getElementById('modal-config').classList.remove('hidden');
+        }
+
+        function cerrarModalConfig() {
+            document.getElementById('modal-config').classList.add('hidden');
+        }
+
+        function aplicarConfiguracion(event) {
+            event.preventDefault();
+            sincronizarVistaImpresion();
+            cerrarModalConfig();
+            alert("¡Cambios de configuración aplicados correctamente!");
+        }
+
+        function sincronizarVistaImpresion() {
+            const nombre = document.getElementById('cfg-nombre').value;
+            const nit = document.getElementById('cfg-nit').value;
+            const ciudad = document.getElementById('cfg-ciudad').value;
+            const telefono = document.getElementById('cfg-telefono').value;
+            const email = document.getElementById('cfg-email').value;
+
+            document.getElementById('print-empresa-nombre').innerText = nombre;
+            document.getElementById('print-empresa-nit').innerText = nit;
+            document.getElementById('print-empresa-ciudad').innerText = ciudad;
+            document.getElementById('print-empresa-telefono').innerText = telefono;
+            document.getElementById('print-empresa-email').innerText = email;
+
+            const garantias = document.getElementById('cfg-garantias').value.trim();
+            const observaciones = document.getElementById('cfg-observaciones').value.trim();
+            const validez = document.getElementById('cfg-validez').value;
+            const pago = document.getElementById('cfg-pago').value;
+
+            document.getElementById('print-garantias').innerText = garantias || "Garantía según políticas comerciales vigentes.";
+            document.getElementById('print-observaciones').innerText = observaciones || "Sin observaciones adicionales.";
+            document.getElementById('print-validez').innerText = validez;
+            document.getElementById('print-pago').innerText = pago;
+
+            const printPreview = document.getElementById('print-logo-preview');
+            const printPlaceholder = document.getElementById('print-logo-placeholder');
+
+            if (logoBase64) {
+                printPreview.src = logoBase64;
+                printPreview.classList.remove('hidden');
+                printPlaceholder.classList.add('hidden');
+            } else {
+                printPreview.src = "";
+                printPreview.classList.add('hidden');
+                printPlaceholder.classList.remove('hidden');
+            }
+        }
+
+        // --- MODAL CLIENTES & FIREBASE ---
+        function abrirModalClientes() { document.getElementById('modal-clientes').classList.remove('hidden'); }
+        function cerrarModalClientes() { 
+            document.getElementById('modal-clientes').classList.add('hidden');
+            ['modal-nit', 'modal-nombre', 'modal-ciudad', 'modal-telefono', 'modal-email'].forEach(id => document.getElementById(id).value = '');
+        }
+        
+        async function guardarCliente(event) {
+            event.preventDefault();
+            const nit = document.getElementById('modal-nit').value.trim();
+            const nombre = document.getElementById('modal-nombre').value.trim();
+            const ciudad = document.getElementById('modal-ciudad').value.trim();
+            const telefono = document.getElementById('modal-telefono').value.trim();
+            const email = document.getElementById('modal-email').value.trim();
+
+            const nuevoCliente = { nit, nombre, ciudad, telefono, email };
+
+            try {
+                // Guardar en la colección de Firebase Firestore
+                await addDoc(collection(db, "clientes"), nuevoCliente);
+                
+                // Cargar datos en el formulario principal
+                document.getElementById('cliente-nit').value = nit;
+                document.getElementById('cliente-nombre').value = nombre;
+                document.getElementById('cliente-ciudad').value = ciudad;
+                document.getElementById('cliente-telefono').value = telefono;
+                document.getElementById('cliente-email').value = email;
+
+                cerrarModalClientes();
+                alert("¡Cliente guardado en la nube y asignado con éxito!");
+            } catch (error) {
+                console.error("Error al guardar cliente en Firestore:", error);
+                alert("Hubo un problema al guardar el cliente en internet.");
+            }
+        }
+
+        // --- MODAL INVENTARIO & FIREBASE ---
+        function abrirModalInventario() { document.getElementById('modal-inventario').classList.remove('hidden'); }
+        function cerrarModalInventario() {
+            document.getElementById('modal-inventario').classList.add('hidden');
+            ['modal-inv-codigo', 'modal-inv-descripcion', 'modal-inv-precio'].forEach(id => document.getElementById(id).value = '');
+        }
+        
+        async function guardarArticuloInventario(event) {
+            event.preventDefault();
+            const codigo = document.getElementById('modal-inv-codigo').value.trim();
+            const descripcion = document.getElementById('modal-inv-descripcion').value.trim();
+            const precio = parseFloat(document.getElementById('modal-inv-precio').value);
+
+            const nuevoArticulo = { codigo, descripcion, precio };
+
+            try {
+                // Guardar en la colección de Firebase Firestore
+                await addDoc(collection(db, "inventario"), nuevoArticulo);
+
+                document.getElementById('nuevo-articulo').value = descripcion;
+                document.getElementById('nuevo-precio').value = precio;
+
+                cerrarModalInventario();
+                alert(`¡Producto "${descripcion}" registrado con éxito en la nube!`);
+            } catch (error) {
+                console.error("Error al guardar artículo en Firestore:", error);
+                alert("Hubo un problema al guardar el producto.");
+            }
+        }
+
+        // --- COINCIDENCIAS DE INVENTARIO ---
+        function buscarArticuloInventario() {
+            const query = document.getElementById('buscar-articulo').value.trim().toLowerCase();
+            if (query.length < 1) return;
+
+            const producto = baseInventario.find(p => 
+                p.codigo.toLowerCase() === query || p.descripcion.toLowerCase().includes(query)
+            );
+
+            if (producto) {
+                document.getElementById('nuevo-articulo').value = producto.descripcion;
+                document.getElementById('nuevo-precio').value = producto.precio;
+                
+                if(producto.codigo.toLowerCase() === query) {
+                    agregarArticulo();
+                    document.getElementById('buscar-articulo').value = '';
+                }
+            }
+        }
+
+        // --- BUSQUEDA CLIENTES ---
+        function buscarClienteMock() {
+            const query = document.getElementById('buscar-cliente').value.trim().toLowerCase();
+            const indicator = document.getElementById('search-indicator');
+            if (query.length < 2) { indicator.classList.add('hidden'); return; }
+
+            const cliente = baseClientes.find(c => c.nit.includes(query) || c.nombre.toLowerCase().includes(query));
+            if (cliente) {
+                document.getElementById('cliente-nit').value = cliente.nit;
+                document.getElementById('cliente-nombre').value = cliente.nombre;
+                document.getElementById('cliente-ciudad').value = cliente.ciudad;
+                document.getElementById('cliente-telefono').value = cliente.telefono;
+                document.getElementById('cliente-email').value = cliente.email;
+                indicator.classList.remove('hidden');
+            } else { indicator.classList.add('hidden'); }
+        }
+
+        // --- AGREGAR ARTÍCULOS ---
+        function agregarArticulo() {
+            const descripcion = document.getElementById('nuevo-articulo').value.trim();
+            const cantidad = parseInt(document.getElementById('nuevo-cant').value);
+            const precioUnitario = parseFloat(document.getElementById('nuevo-precio').value);
+
+            if (!descripcion || isNaN(cantidad) || cantidad <= 0 || isNaN(precioUnitario) || precioUnitario <= 0) {
+                alert("Por favor rellene los campos de artículo correctamente.");
+                return;
+            }
+
+            articulos.push({ id: Date.now(), descripcion, cantidad, precioUnitario });
+            actualizarTabla();
+
+            document.getElementById('nuevo-articulo').value = '';
+            document.getElementById('nuevo-cant').value = '1';
+            document.getElementById('nuevo-precio').value = '';
+            document.getElementById('buscar-articulo').value = '';
+            document.getElementById('buscar-articulo').focus();
+        }
+
+        function eliminarArticulo(id) {
+            articulos = articulos.filter(item => item.id !== id);
+            actualizarTabla();
+        }
+
+        function formatearMoneda(valor) {
+            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(valor);
+        }
+
+        function actualizarTabla() {
+            const tbody = document.getElementById('cuerpo-tabla');
+            tbody.innerHTML = '';
+
+            if (articulos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-sm text-slate-400 italic">No has agregado ningún artículo aún.</td></tr>`;
+                actualizarTotales(0, 0, 0);
+                return;
+            }
+
+            let subtotalGlobal = 0, ivaGlobal = 0;
+
+            articulos.forEach(item => {
+                const subtotalItem = item.cantidad * item.precioUnitario;
+                const ivaItem = subtotalItem * 0.19;
+                subtotalGlobal += subtotalItem;
+                ivaGlobal += ivaItem;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition-colors print:hover:bg-transparent";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 text-sm text-slate-600 print:px-2">${item.cantidad}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-800 print:px-2">${item.descripcion}</td>
+                    <td class="px-6 py-4 text-sm text-slate-600 text-right print:px-2">${formatearMoneda(item.precioUnitario)}</td>
+                    <td class="px-6 py-4 text-sm text-slate-400 text-right print:px-2">${formatearMoneda(ivaItem)}</td>
+                    <td class="px-6 py-4 text-sm font-bold text-slate-800 text-right print:px-2">${formatearMoneda(subtotalItem + ivaItem)}</td>
+                    <td class="px-6 py-4 text-center print:hidden">
+                        <button onclick="eliminarArticulo(${item.id})" class="text-pink-500 hover:text-pink-700 font-bold text-xs">Remover</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            actualizarTotales(subtotalGlobal, ivaGlobal, subtotalGlobal + ivaGlobal);
+        }
+
+        function actualizarTotales(subtotal, iva, total) {
+            document.getElementById('resumen-subtotal').innerText = formatearMoneda(subtotal);
+            document.getElementById('resumen-iva').innerText = formatearMoneda(iva);
+            document.getElementById('resumen-total').innerText = formatearMoneda(total);
+        }
+
+        function limpiarPresupuesto() {
+            if (confirm("¿Deseas limpiar la cotización actual?")) {
+                articulos = []; actualizarTabla();
+                ['cliente-nit', 'cliente-nombre', 'cliente-ciudad', 'cliente-telefono', 'cliente-email', 'buscar-cliente', 'buscar-articulo'].forEach(id => document.getElementById(id).value = '');
+            }
+        }
+
+        // --- EXPONER LAS FUNCIONES AL CONTEXTO WINDOWS ---
+        // (Requerido ya que usamos script type="module" y tu HTML invoca los eventos directamente)
+        window.abrirModalClientes = abrirModalClientes;
+        window.cerrarModalClientes = cerrarModalClientes;
+        window.guardarCliente = guardarCliente;
+        window.abrirModalInventario = abrirModalInventario;
+        window.cerrarModalInventario = cerrarModalInventario;
+        window.guardarArticuloInventario = guardarArticuloInventario;
+        window.buscarArticuloInventario = buscarArticuloInventario;
+        window.buscarClienteMock = buscarClienteMock;
+        window.agregarArticulo = agregarArticulo;
+        window.eliminarArticulo = eliminarArticulo;
+        window.limpiarPresupuesto = limpiarPresupuesto;
+        window.abrirModalConfig = abrirModalConfig;
+        window.cerrarModalConfig = cerrarModalConfig;
+        window.aplicarConfiguracion = aplicarConfiguracion;
+        window.procesarLogo = procesarLogo;
+        window.removerLogo = removerLogo;
+    </script>
+
+    <style>
+        @media print {
+            aside { display: none !important; }
+            main { padding-left: 0 !important; }
+            body { background-color: white !important; }
+            .bg-white { border: none !important; box-shadow: none !important; }
+            input, textarea { border: none !important; background-color: transparent !important; padding: 0 !important; box-shadow: none !important; outline: none !important; }
+            input::placeholder, textarea::placeholder { color: transparent !important; }
+            .print\:hidden { display: none !important; }
+        }
+    </style>
+</body>
+</html>
